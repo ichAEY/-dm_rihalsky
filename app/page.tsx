@@ -1,155 +1,167 @@
-import Image from 'next/image';
+'use client';
+
+import { useEffect } from 'react';
 
 const concerns = [
-  { number: '01', title: 'Спина и поясница', note: 'Боль, скованность, ограничение движения' },
-  { number: '02', title: 'Шея и плечи', note: 'Дискомфорт при поворотах и подъёме руки' },
-  { number: '03', title: 'Колени и суставы', note: 'Возвращение к привычной нагрузке' },
-  { number: '04', title: 'После травм', note: 'Восстановление движения после операций и травм' },
-  { number: '05', title: 'Осанка', note: 'Работа с двигательными привычками и дисбалансами' },
-  { number: '06', title: 'Возвращение в спорт', note: 'Постепенное и контролируемое повышение нагрузки' },
+  ['01', 'Спина и поясница', 'Когда боль, скованность или ограничение мешают привычно двигаться.'],
+  ['02', 'Шея и плечевой пояс', 'Когда повороты, подъём руки или длительная нагрузка вызывают дискомфорт.'],
+  ['03', 'Колени и суставы', 'Когда хочется вернуть уверенность в ходьбе, приседании и повседневной нагрузке.'],
+  ['04', 'После травмы', 'Когда нужно последовательно вернуть движение и постепенно увеличить нагрузку.'],
+  ['05', 'Возвращение к спорту', 'Когда важно вернуться к тренировкам без хаотичного увеличения нагрузки.'],
+  ['06', 'Неясное ограничение', 'Когда движение изменилось, но непонятно, с чего начинать восстановление.'],
 ];
 
 const steps = [
-  { number: '01', title: 'Разбираем ситуацию', text: 'Что беспокоит, когда началось и какие движения сейчас ограничены.' },
-  { number: '02', title: 'Оцениваем движение', text: 'Смотрим подвижность, привычные компенсации и реакцию на простые тесты.' },
-  { number: '03', title: 'Составляем план', text: 'Подбираем понятные упражнения и определяем следующий шаг восстановления.' },
+  ['01', 'Разбираем запрос', 'Что беспокоит, как давно, какие движения стали сложнее и чего вы хотите вернуть.'],
+  ['02', 'Оцениваем движение', 'Смотрим подвижность, реакцию на нагрузку и простые двигательные тесты.'],
+  ['03', 'Собираем план', 'Определяем приоритеты, упражнения и понятную последовательность дальнейшей работы.'],
 ];
 
-const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const vertebrae = Array.from({ length: 14 });
 
 export default function Home() {
+  useEffect(() => {
+    document.body.classList.add('is-ready');
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('is-visible')),
+      { threshold: 0.14 }
+    );
+    document.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="В начало страницы">
-          <span className="brand-mark">ДР</span>
-          <span className="brand-name">Дмитрий Рихальский</span>
-        </a>
-        <nav className="desktop-nav" aria-label="Основная навигация">
+      <div className="intro" aria-hidden="true"><span>Движение</span></div>
+
+      <header className="nav">
+        <a className="brand" href="#top">Дмитрий Рихальский<small>физическая реабилитация</small></a>
+        <nav aria-label="Основная навигация">
           <a href="#help">С чем работаю</a>
           <a href="#process">Как проходит</a>
-          <a href="#about">Обо мне</a>
+          <a href="#format">Форматы</a>
         </nav>
-        <a className="header-cta" href="#contact">Записаться <span aria-hidden="true">↗</span></a>
+        <a className="navCta" href="#contact">Связаться <span>↗</span></a>
       </header>
 
       <section className="hero" id="top">
-        <div className="hero-copy">
-          <p className="eyebrow"><span /> Физическая реабилитация · Севастополь</p>
-          <h1>Вернуться<br />к движению.</h1>
-          <p className="hero-lead">Помогаю разобраться, почему движение стало болезненным или ограниченным, и составляю индивидуальный план восстановления.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="#contact">Разобрать мой случай <span aria-hidden="true">↗</span></a>
-            <a className="text-link" href="#process">Как проходит консультация <span>↓</span></a>
-          </div>
-          <div className="hero-facts" aria-label="Основная информация о консультации">
-            <div><strong>60</strong><span>минут</span></div>
-            <div><strong>5 000 ₽</strong><span>стоимость</span></div>
-            <div><strong>2 формата</strong><span>очно и онлайн</span></div>
+        <div className="heroWords">
+          <p className="heroKicker">Физическая реабилитация · Севастополь · онлайн</p>
+          <h1>
+            <span>Вернуться</span>
+            <span className="accentLine"><em>к движению</em></span>
+            <span>уверенно</span>
+          </h1>
+          <p className="heroLead">Помогаю понять, что ограничивает движение, оценить исходную точку и выстроить индивидуальный план восстановления — очно в Севастополе или онлайн.</p>
+          <div className="heroActions">
+            <a className="button primaryButton" href="#contact">Разобрать мой случай <span>↗</span></a>
+            <a className="textLink" href="#process">Как проходит консультация ↓</a>
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="Дмитрий Рихальский">
-          <div className="visual-orbit orbit-one" />
-          <div className="visual-orbit orbit-two" />
-          <div className="portrait-frame">
-            <Image src={`${publicBasePath}/portrait-story.png`} alt="Дмитрий Рихальский, специалист по физической реабилитации" fill priority sizes="(max-width: 760px) 88vw, 42vw" className="portrait-image" />
-            <div className="portrait-shade" />
+        <div className="heroVisual" aria-hidden="true">
+          <div className="motionHalo haloOne" />
+          <div className="motionHalo haloTwo" />
+          <div className="spineObject">
+            {vertebrae.map((_, index) => <span className="vertebra" key={index} style={{ '--i': index } as React.CSSProperties} />)}
           </div>
-          <div className="visual-note note-top"><span>Очно</span><strong>Севастополь</strong></div>
-          <div className="visual-note note-bottom"><span>Онлайн</span><strong>Из любой точки</strong></div>
-          <p className="visual-caption">Движение — это навык,<br />который можно вернуть.</p>
+          <p className="visualNote"><span>движение</span><strong>не шаблон.<br />это система.</strong></p>
         </div>
       </section>
 
-      <section className="concerns section" id="help">
-        <div className="section-heading">
-          <p className="eyebrow"><span /> С чем можно обратиться</p>
-          <h2>Когда тело<br />мешает жить активно</h2>
-          <p>Начинаем не с универсального упражнения, а с понимания вашей ситуации.</p>
+      <div className="factsMarquee" aria-label="60 минут, 5 000 рублей, очно и онлайн">
+        <div className="factsTrack" aria-hidden="true">
+          {[0, 1].map((set) => (
+            <div className="factsSet" key={set}>
+              <span>60 минут <b>·</b> 5 000 ₽ <b>·</b> Очно в Севастополе <b>·</b> Онлайн <b>·</b></span>
+              <span>60 минут <b>·</b> 5 000 ₽ <b>·</b> Очно в Севастополе <b>·</b> Онлайн <b>·</b></span>
+            </div>
+          ))}
         </div>
-        <div className="concern-grid">
-          {concerns.map((item) => (
-            <article className="concern-card" key={item.number}>
-              <span className="card-number">{item.number}</span>
-              <div><h3>{item.title}</h3><p>{item.note}</p></div>
-              <span className="card-arrow" aria-hidden="true">↗</span>
+      </div>
+
+      <section className="helpSection" id="help">
+        <div className="sectionIntro reveal" data-reveal>
+          <p>С чем можно обратиться</p>
+          <h2>Когда движение<br /><em>перестало быть простым</em></h2>
+          <span>Начинаем не с набора универсальных упражнений, а с вашей конкретной ситуации.</span>
+        </div>
+        <div className="concernGrid reveal" data-reveal>
+          {concerns.map(([number, title, text]) => (
+            <article className="concernCard" key={number}>
+              <span className="cardIndex">{number}</span>
+              <div><h3>{title}</h3><p>{text}</p></div>
+              <span className="cardMark" aria-hidden="true">↗</span>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="process section" id="process">
-        <div className="process-intro">
-          <p className="eyebrow light"><span /> Как проходит работа</p>
-          <h2>Понятный путь<br />без случайных действий</h2>
-          <p>Консультация помогает увидеть исходную точку и получить реалистичный план дальнейшей работы.</p>
+      <section className="processSection" id="process">
+        <div className="processStatement reveal" data-reveal>
+          <p>Принцип работы</p>
+          <h2>Сначала <em>понять.</em><br />Потом нагружать.</h2>
+          <p className="processLead">Консультация нужна не для того, чтобы выдать случайный комплекс упражнений, а чтобы определить исходную точку и следующий разумный шаг.</p>
         </div>
-        <div className="steps">
-          {steps.map((step) => (
-            <article className="step" key={step.number}>
-              <span>{step.number}</span>
-              <div><h3>{step.title}</h3><p>{step.text}</p></div>
+        <div className="steps reveal" data-reveal>
+          {steps.map(([number, title, text]) => (
+            <article className="step" key={number}>
+              <span>{number}</span>
+              <div><h3>{title}</h3><p>{text}</p></div>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="about section" id="about">
-        <div className="about-statement">
-          <p className="eyebrow"><span /> Подход</p>
-          <p className="about-quote">Разобраться в движении. Понять исходную точку. Выстроить последовательный план восстановления.</p>
+      <section className="resultSection">
+        <div className="resultTitle reveal" data-reveal>
+          <p>Что остаётся после консультации</p>
+          <h2>Не просто<br /><em>«делайте упражнения»</em></h2>
         </div>
-        <div className="about-card">
-          <div className="about-name">
-            <span>ДР</span>
-            <div><strong>Дмитрий Рихальский</strong><p>Специалист по физической реабилитации</p></div>
-          </div>
-          <p className="about-text">Работаю с болью и ограничениями движения, восстановлением после травм, нарушениями осанки и возвращением к физической активности.</p>
-          <div className="about-tags"><span>Индивидуальный подход</span><span>Практика движения</span><span>Очно и онлайн</span></div>
+        <div className="resultList reveal" data-reveal>
+          <article><span>01</span><h3>Понимание исходной точки</h3><p>Что сейчас ограничивает движение и на что стоит обратить внимание в первую очередь.</p></article>
+          <article><span>02</span><h3>Приоритеты восстановления</h3><p>Что делать сейчас, а что не нужно форсировать раньше времени.</p></article>
+          <article><span>03</span><h3>План следующих действий</h3><p>Понятная последовательность упражнений и дальнейшего увеличения нагрузки.</p></article>
         </div>
       </section>
 
-      <section className="format section">
-        <div className="section-heading format-heading">
-          <p className="eyebrow"><span /> Форматы консультации</p>
-          <h2>Выберите удобный<br />способ начать</h2>
+      <section className="formatSection" id="format">
+        <div className="formatIntro reveal" data-reveal>
+          <p>Форматы</p>
+          <h2>Начать можно<br /><em>двумя способами</em></h2>
+          <span>Одинаковая логика разбора — отличается только формат встречи.</span>
         </div>
-        <div className="format-grid">
-          <article className="format-card featured">
-            <div className="format-top"><span>01</span><p>Севастополь</p></div>
+        <div className="formatGrid reveal" data-reveal>
+          <article className="formatCard featured">
+            <div className="formatTop"><span>01</span><small>Севастополь</small></div>
             <h3>Очная<br />консультация</h3>
-            <p className="format-description">Личная оценка движения и индивидуальные рекомендации.</p>
-            <div className="format-price"><strong>5 000 ₽</strong><span>/ 60 минут</span></div>
-            <a href="#contact">Записаться <span>↗</span></a>
+            <p>Личная оценка движения, двигательные тесты и рекомендации по дальнейшей работе.</p>
+            <div className="formatFacts"><strong>5 000 ₽</strong><span>60 минут</span></div>
+            <a href="#contact">Разобрать мой случай <span>↗</span></a>
           </article>
-          <article className="format-card">
-            <div className="format-top"><span>02</span><p>Видеосвязь</p></div>
+          <article className="formatCard">
+            <div className="formatTop"><span>02</span><small>Видеосвязь</small></div>
             <h3>Онлайн-<br />консультация</h3>
-            <p className="format-description">Разбор запроса по видеосвязи и рекомендации для дальнейшей работы.</p>
-            <div className="format-price"><strong>5 000 ₽</strong><span>/ 60 минут</span></div>
-            <a href="#contact">Записаться <span>↗</span></a>
+            <p>Разбор запроса, доступная оценка движения по видеосвязи и план самостоятельной работы.</p>
+            <div className="formatFacts"><strong>5 000 ₽</strong><span>60 минут</span></div>
+            <a href="#contact">Разобрать мой случай <span>↗</span></a>
           </article>
         </div>
       </section>
 
-      <section className="contact section" id="contact">
-        <div className="contact-copy">
-          <p className="eyebrow light"><span /> Запись на консультацию</p>
-          <h2>Расскажите,<br />что вас беспокоит</h2>
-          <p>Напишите Дмитрию в Instagram. Укажите, нужен очный или онлайн-формат — детали и свободное время согласуете в переписке.</p>
-        </div>
-        <a className="contact-button" href="https://www.instagram.com/dm_rihalsky/" target="_blank" rel="noreferrer">
-          <span className="contact-label">Написать в Instagram</span>
-          <span className="contact-handle">@dm_rihalsky</span>
-          <span className="contact-arrow" aria-hidden="true">↗</span>
-        </a>
+      <section className="contactSection" id="contact">
+        <div className="contactGlow" aria-hidden="true" />
+        <p>Запись на консультацию</p>
+        <h2>Опишите,<br /><em>что мешает двигаться</em></h2>
+        <span className="contactCopy">Напишите Дмитрию в Instagram. Коротко опишите ситуацию и укажите, какой формат вам удобнее — очный или онлайн.</span>
+        <a className="button lightButton" href="https://www.instagram.com/dm_rihalsky/" target="_blank" rel="noreferrer">Написать @dm_rihalsky <span>↗</span></a>
       </section>
 
       <footer>
-        <div className="footer-brand"><span className="brand-mark">ДР</span><p>Дмитрий Рихальский<br /><small>Физическая реабилитация</small></p></div>
-        <p className="footer-note">Информация на сайте не является медицинским диагнозом. Имеются противопоказания, необходима консультация специалиста.</p>
-        <a href="#top">Наверх ↑</a>
+        <a className="footerBrand" href="#top">Дмитрий Рихальский<small>физическая реабилитация</small></a>
+        <div><span>Формат</span><p>Очно · Севастополь<br />Онлайн · видеосвязь</p></div>
+        <div><span>Консультация</span><p>60 минут<br />5 000 ₽</p></div>
+        <div><span>Связь</span><p><a href="https://www.instagram.com/dm_rihalsky/" target="_blank" rel="noreferrer">@dm_rihalsky ↗</a></p></div>
       </footer>
     </main>
   );
