@@ -1,0 +1,409 @@
+/* Hero v2 — blue/white rehabilitation direction. Loaded after globals.css. */
+
+:root {
+  --hero-navy: #06172d;
+  --hero-blue: #0a3f7a;
+  --hero-cobalt: #176bdb;
+  --hero-sky: #75caff;
+  --hero-ice: #eef8ff;
+  --hero-white: #ffffff;
+}
+
+.site-header {
+  color: var(--hero-white);
+}
+
+.header-cta span,
+.hero .eyebrow > span,
+.text-link span {
+  color: var(--hero-sky);
+}
+
+.hero {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 73% 48%, rgba(117, 202, 255, .19), transparent 31%),
+    linear-gradient(118deg, var(--hero-navy) 0%, #08294f 47%, #0a3c70 100%);
+}
+
+.hero::before {
+  opacity: .22;
+  background-image:
+    linear-gradient(rgba(255,255,255,.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.075) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(circle at 67% 45%, #000 0%, transparent 65%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 680px;
+  height: 680px;
+  right: -190px;
+  top: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(112,205,255,.18), rgba(51,123,218,.06) 48%, transparent 72%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.hero-copy {
+  z-index: 4;
+}
+
+.hero .eyebrow {
+  color: rgba(231, 244, 255, .68);
+}
+
+.hero h1 {
+  color: var(--hero-white);
+}
+
+.hero-lead {
+  color: rgba(232, 244, 255, .72);
+}
+
+.button-primary {
+  color: #082247;
+  background: linear-gradient(135deg, #ffffff 0%, #e6f5ff 100%);
+  box-shadow: 0 14px 42px rgba(1, 12, 31, .2);
+}
+
+.button-primary:hover {
+  background: #ffffff;
+}
+
+.text-link {
+  color: rgba(240, 248, 255, .76);
+}
+
+.hero-facts {
+  border-color: rgba(210, 235, 255, .2);
+}
+
+.hero-facts span {
+  color: rgba(214, 235, 255, .47);
+}
+
+.hero-visual {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+  background:
+    radial-gradient(circle at 48% 48%, rgba(225,246,255,.17), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.075));
+}
+
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  inset: 8% 5% 7%;
+  background: url('/-dm_rihalsky/spine-hero.svg') center / contain no-repeat;
+  filter: drop-shadow(0 32px 46px rgba(2, 13, 31, .28));
+  transform-origin: 50% 52%;
+  animation: spineFloat 7.2s ease-in-out infinite;
+}
+
+.hero-visual::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  width: min(42vw, 570px);
+  aspect-ratio: 1;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(135, 214, 255, .2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(-14deg) scaleY(.62);
+  box-shadow: 0 0 70px rgba(47, 143, 255, .08), inset 0 0 50px rgba(117, 202, 255, .06);
+  animation: orbitDrift 10s ease-in-out infinite;
+}
+
+.portrait-frame,
+.visual-note,
+.visual-caption,
+.visual-orbit {
+  display: none;
+}
+
+@keyframes spineFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.4deg); }
+  50% { transform: translate3d(0, -13px, 0) rotate(1.2deg); }
+}
+
+@keyframes orbitDrift {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-14deg) scaleY(.62); opacity: .7; }
+  50% { transform: translate(-50%, -50%) rotate(6deg) scaleY(.68); opacity: 1; }
+}
+
+@media (min-width: 761px) {
+  .hero-actions {
+    order: 5;
+    margin-top: auto;
+    padding-top: 34px;
+  }
+
+  .hero-facts {
+    order: 4;
+    margin-top: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    position: absolute;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 18px 0;
+  }
+
+  .brand {
+    gap: 0;
+  }
+
+  .brand-mark {
+    display: none;
+  }
+
+  .brand-name {
+    display: block;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: -.025em;
+  }
+
+  .header-cta {
+    font-size: 0;
+    line-height: 1;
+    color: rgba(238, 248, 255, .86);
+  }
+
+  .header-cta::before {
+    content: "@dm_rihalsky";
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+
+  .header-cta span {
+    display: none;
+  }
+
+  .hero {
+    position: relative;
+    display: block;
+    height: 100svh;
+    min-height: 660px;
+    max-height: 940px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 52% 49%, rgba(95, 190, 255, .24), transparent 28%),
+      radial-gradient(circle at 90% 12%, rgba(56, 133, 232, .22), transparent 32%),
+      linear-gradient(164deg, #05162b 0%, #082d58 57%, #0b3d73 100%);
+  }
+
+  .hero::before {
+    opacity: .14;
+    background-size: 54px 54px;
+    mask-image: linear-gradient(to bottom, #000, transparent 76%);
+  }
+
+  .hero::after {
+    width: 430px;
+    height: 430px;
+    top: 30%;
+    right: 50%;
+    transform: translateX(50%);
+    background: radial-gradient(circle, rgba(111, 204, 255, .18), rgba(35, 112, 211, .06) 48%, transparent 70%);
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 68px 18px 16px;
+  }
+
+  .hero .eyebrow {
+    display: block;
+    width: 100%;
+    margin: 17px 0 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: rgba(214, 235, 255, .64);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .105em;
+  }
+
+  .hero .eyebrow > span {
+    display: none;
+  }
+
+  .hero h1 {
+    max-width: 92%;
+    font-size: clamp(42px, 12.5vw, 58px);
+    font-weight: 520;
+    line-height: .91;
+    letter-spacing: -.065em;
+  }
+
+  .hero-lead {
+    max-width: 95%;
+    margin-top: 16px;
+    color: rgba(228, 241, 252, .7);
+    font-size: 13px;
+    line-height: 1.48;
+  }
+
+  .hero-visual {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    min-height: 0;
+    pointer-events: none;
+    background: transparent;
+  }
+
+  .hero-visual::before {
+    inset: 31% 16% 27%;
+    background-size: contain;
+    filter: drop-shadow(0 22px 34px rgba(0, 10, 28, .24));
+    animation-duration: 6.6s;
+  }
+
+  .hero-visual::after {
+    width: 88vw;
+    max-width: 390px;
+    top: 50%;
+    border-color: rgba(158, 222, 255, .14);
+  }
+
+  .hero-facts {
+    order: 4;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: none;
+    margin-top: auto;
+    margin-bottom: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(194, 226, 250, .17);
+  }
+
+  .hero-facts div {
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .hero-facts strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero-facts span {
+    overflow: hidden;
+    font-size: 7px;
+    letter-spacing: .07em;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero-actions {
+    order: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    margin: 0;
+  }
+
+  .button {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-size: 13px;
+  }
+
+  .button-primary {
+    background: linear-gradient(135deg, #ffffff 0%, #dff3ff 100%);
+    box-shadow: 0 12px 36px rgba(1, 15, 36, .22);
+  }
+
+  .text-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 38px;
+    padding: 0 4px;
+    color: rgba(236, 246, 255, .72);
+    font-size: 11px;
+    text-align: left;
+  }
+
+  .text-link span {
+    color: rgba(129, 207, 255, .95);
+  }
+}
+
+@media (max-width: 760px) and (max-height: 740px) {
+  .hero-copy {
+    padding-top: 62px;
+    padding-bottom: 10px;
+  }
+
+  .hero .eyebrow {
+    margin-top: 12px;
+    margin-bottom: 9px;
+    font-size: 8px;
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 11.2vw, 49px);
+  }
+
+  .hero-lead {
+    max-width: 92%;
+    margin-top: 11px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  .hero-visual::before {
+    inset: 31% 22% 28%;
+  }
+
+  .hero-facts {
+    margin-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .button {
+    min-height: 47px;
+  }
+
+  .text-link {
+    min-height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual::before,
+  .hero-visual::after {
+    animation: none !important;
+  }
+}
