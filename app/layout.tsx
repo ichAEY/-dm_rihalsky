@@ -3,20 +3,18 @@ import './globals.css';
 import './hero-v2.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dm-rihalsky.melikyan-mac.chatgpt.site'),
+  metadataBase: new URL('https://ichaey.github.io/-dm_rihalsky/'),
   title: 'Дмитрий Рихальский — физическая реабилитация',
-  description: 'Восстановление движения после боли, травм и операций. Очные консультации в Севастополе и онлайн.',
+  description: 'Индивидуальный разбор движения и план восстановления. Очно в Севастополе и онлайн.',
   openGraph: {
-    title: 'Дмитрий Рихальский — вернуться к движению',
-    description: 'Физическая реабилитация. Очно в Севастополе и онлайн.',
+    title: 'Дмитрий Рихальский — физическая реабилитация',
+    description: 'Разобраться в ограничении движения и выстроить понятный план восстановления. Севастополь · онлайн.',
     type: 'website',
-    images: [{ url: '/og.png', width: 1730, height: 909, alt: 'Дмитрий Рихальский — вернуться к движению' }],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Дмитрий Рихальский — вернуться к движению',
-    description: 'Физическая реабилитация. Очно в Севастополе и онлайн.',
-    images: ['/og.png'],
+    card: 'summary',
+    title: 'Дмитрий Рихальский — физическая реабилитация',
+    description: 'Очно в Севастополе и онлайн.',
   },
 };
 
