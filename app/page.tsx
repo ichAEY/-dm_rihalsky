@@ -1,292 +1,212 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 const instagramUrl = 'https://www.instagram.com/dm_rihalsky/';
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const asset = (path: string) => `${basePath}${path}`;
+
+const trustFacts = [
+  ['13+', 'лет практики'],
+  ['1000+', 'клиентов'],
+  ['СРР', 'Союз реабилитологов России'],
+  ['Личный', 'опыт восстановления после травмы'],
+];
 
 const concerns = [
-  { title: 'Спина и поясница', text: 'Когда боль, скованность или ограничение движения мешают привычной активности.' },
-  { title: 'Шея и плечевой пояс', text: 'Когда повороты, подъём руки или длительная нагрузка вызывают дискомфорт.' },
-  { title: 'Колени и суставы', text: 'Когда нужно вернуть уверенность в ходьбе, приседании и повседневной нагрузке.' },
-  { title: 'После травмы', text: 'Когда важно последовательно вернуть движение и постепенно увеличить нагрузку.' },
-  { title: 'Возвращение к спорту', text: 'Когда хочется вернуться к тренировкам без хаотичного увеличения нагрузки.' },
+  ['Спина, суставы, мышцы', 'Когда боль или скованность мешают нормально двигаться и нагружаться.'],
+  ['После травмы', 'Когда нужно постепенно вернуть движение, силу и привычную активность.'],
+  ['Осанка и дисбалансы', 'Таз, грудная клетка, лопатки и другие двигательные дисбалансы.'],
+  ['Возвращение к нагрузке', 'Когда хочется снова тренироваться и двигаться увереннее.'],
 ];
 
 const steps = [
-  { number: '01', title: 'Разбираем ситуацию', text: 'Что беспокоит, когда началось, какие движения сейчас ограничены и к чему вы хотите вернуться.' },
-  { number: '02', title: 'Оцениваем движение', text: 'Смотрим подвижность, реакцию на нагрузку и простые двигательные тесты.' },
-  { number: '03', title: 'Собираем план', text: 'Определяем приоритеты, упражнения и понятную последовательность дальнейшей работы.' },
+  ['01', 'Разбираем запрос', 'Что беспокоит, как давно и к какому движению вы хотите вернуться.'],
+  ['02', 'Смотрим движение', 'Оцениваем подвижность, реакцию на нагрузку и доступные двигательные тесты.'],
+  ['03', 'Собираем план', 'Определяем приоритеты и понятную последовательность дальнейшей работы.'],
 ];
-
-const vertebrae = Array.from({ length: 13 }, (_, index) => index);
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [introVisible, setIntroVisible] = useState(true);
   const [stickyVisible, setStickyVisible] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const bookingRef = useRef<HTMLElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let introTimer = 0;
-    try {
-      if (window.sessionStorage.getItem('dm-rihalsky-intro-seen')) {
-        setIntroVisible(false);
-      } else {
-        introTimer = window.setTimeout(() => {
-          setIntroVisible(false);
-          window.sessionStorage.setItem('dm-rihalsky-intro-seen', '1');
-          document.documentElement.classList.add('dm-intro-seen');
-        }, 1050);
-      }
-    } catch {
-      introTimer = window.setTimeout(() => setIntroVisible(false), 1050);
-    }
-
-    const observer = new IntersectionObserver(
+    const revealObserver = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('is-visible')),
-      { threshold: 0.1 },
+      { threshold: 0.12 },
     );
-    document.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
+    document.querySelectorAll('[data-reveal]').forEach((node) => revealObserver.observe(node));
 
-    let heroIsVisible = true;
-    let bookingIsVisible = false;
-    const syncSticky = () => setStickyVisible(!heroIsVisible && !bookingIsVisible);
+    let heroVisible = true;
+    let bookingVisible = false;
+    const syncSticky = () => setStickyVisible(!heroVisible && !bookingVisible);
 
     const heroObserver = new IntersectionObserver(([entry]) => {
-      heroIsVisible = entry.isIntersecting;
+      heroVisible = entry.isIntersecting;
       syncSticky();
-    }, { threshold: 0.08 });
+    }, { threshold: 0.06 });
 
     const bookingObserver = new IntersectionObserver(([entry]) => {
-      bookingIsVisible = entry.isIntersecting;
+      bookingVisible = entry.isIntersecting;
       syncSticky();
-    }, { threshold: 0.05 });
+    }, { threshold: 0.08 });
 
     if (heroRef.current) heroObserver.observe(heroRef.current);
     if (bookingRef.current) bookingObserver.observe(bookingRef.current);
 
     return () => {
-      if (introTimer) window.clearTimeout(introTimer);
-      observer.disconnect();
+      revealObserver.disconnect();
       heroObserver.disconnect();
       bookingObserver.disconnect();
     };
   }, []);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false);
-    };
-
-    window.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [menuOpen]);
-
   return (
-    <div className="mct-mobile">
-      {introVisible && (
-        <div className="mct-intro" aria-hidden="true">
-          <div className="mct-intro-mark">
-            <span>Дмитрий</span>
-            <i />
-            <small>Физическая реабилитация</small>
+    <main className="site">
+      <header className="hero" id="top" ref={heroRef}>
+        <div className="topbar shell">
+          <a className="brand" href="#top">Дмитрий Рихальский</a>
+          <nav className="desktop-nav" aria-label="Разделы сайта">
+            <a href="#trust">О специалисте</a>
+            <a href="#help">С чем работаю</a>
+            <a href="#process">Как проходит</a>
+          </nav>
+          <div className="top-actions">
+            <a className="contact-link" href={instagramUrl}>@dm_rihalsky <span>↗</span></a>
+            <button className={`menu-button${menuOpen ? ' is-open' : ''}`} type="button" aria-label="Меню" onClick={() => setMenuOpen((v) => !v)}>
+              <i /><i />
+            </button>
           </div>
-        </div>
-      )}
-
-      <header className="mct-hero" id="mobile-top" ref={heroRef}>
-        <div className="mct-shell">
-          <div className="mct-topbar">
-            <a className="mct-brand" href="#mobile-top" aria-label="Дмитрий Рихальский — в начало страницы">Дмитрий Рихальский</a>
-
-            <nav className="dct-navigation" aria-label="Основные разделы сайта">
-              <a href="#mobile-help">С чем работаю</a>
-              <a href="#mobile-process">Как проходит</a>
-              <a href="#mobile-formats">Форматы</a>
-              <a href="#mobile-booking">Запись</a>
+          {menuOpen && (
+            <nav className="mobile-menu" aria-label="Мобильное меню">
+              <a href="#trust" onClick={() => setMenuOpen(false)}>О специалисте</a>
+              <a href="#help" onClick={() => setMenuOpen(false)}>С чем работаю</a>
+              <a href="#process" onClick={() => setMenuOpen(false)}>Как проходит</a>
+              <a href="#booking" onClick={() => setMenuOpen(false)}>Записаться</a>
             </nav>
+          )}
+        </div>
 
-            <div className="dct-top-actions">
-              <a className="dct-top-phone" href={instagramUrl} aria-label="Связаться с Дмитрием в Instagram">
-                <span><small>Связаться</small><strong>@dm_rihalsky</strong></span>
-              </a>
-            </div>
-
-            <div className="mct-topbar-mobile-actions">
-              <a className="mct-mobile-contact" href={instagramUrl} aria-label="Связаться с Дмитрием в Instagram">Связаться <span aria-hidden="true">↗</span></a>
-              <div className="mct-menu-wrap" ref={menuRef}>
-                <button
-                  className={`mct-menu-button${menuOpen ? ' is-open' : ''}`}
-                  type="button"
-                  aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
-                  aria-expanded={menuOpen}
-                  aria-controls="mobile-navigation"
-                  onClick={() => setMenuOpen((value) => !value)}
-                >
-                  <span /><span /><span />
-                </button>
-                {menuOpen && (
-                  <nav className="mct-menu-panel" id="mobile-navigation" aria-label="Разделы сайта">
-                    <a href="#mobile-help" onClick={() => setMenuOpen(false)}><span>•</span>С чем работаю</a>
-                    <a href="#mobile-process" onClick={() => setMenuOpen(false)}><span>•</span>Как проходит</a>
-                    <a href="#mobile-formats" onClick={() => setMenuOpen(false)}><span>•</span>Форматы</a>
-                    <a href="#mobile-booking" onClick={() => setMenuOpen(false)}><span>•</span>Запись</a>
-                  </nav>
-                )}
-              </div>
-            </div>
+        <div className="hero-inner shell">
+          <div className="hero-copy">
+            <div className="eyebrow">Физическая реабилитация · Севастополь и онлайн</div>
+            <h1>Вернуться<br /><span>к движению</span></h1>
+            <p>Помогаю разобраться, почему движение стало болезненным или ограниченным, и выстроить понятный план восстановления.</p>
           </div>
 
-          <div className="mct-hero-content">
-            <div className="mct-hero-meta">
-              <span>Физическая реабилитация</span>
-              <span className="mct-hero-mode">Севастополь · онлайн</span>
+          <div className="hero-art" aria-hidden="true">
+            <div className="hero-anatomy-window">
+              <img src={asset('/portrait-story.png')} alt="" />
             </div>
-            <h1>Вернуться <em>к движению</em></h1>
-            <p className="mct-hero-copy">Помогаю разобраться, почему движение стало болезненным или ограниченным, и составляю индивидуальный план восстановления.</p>
+            <div className="orbit orbit-a" />
+            <div className="orbit orbit-b" />
+            <span className="motion-dot dot-a" />
+            <span className="motion-dot dot-b" />
+            <div className="motion-label"><span>движение</span><b>нагрузка</b><em>контроль</em></div>
           </div>
 
-          <div className="mct-hero-visual" aria-hidden="true">
-            <div className="mct-spine-stage">
-              <div className="mct-spine-halo" />
-              <div className="mct-spine-axis" />
-              <div className="mct-spine">
-                {vertebrae.map((index) => (
-                  <span className="mct-vertebra" key={index} style={{ '--i': index } as React.CSSProperties}>
-                    <i className="mct-vertebra-core" />
-                    <b className="mct-vertebra-wing mct-vertebra-wing-left" />
-                    <b className="mct-vertebra-wing mct-vertebra-wing-right" />
-                  </span>
-                ))}
-              </div>
-              <span className="mct-motion-line mct-motion-line-one" />
-              <span className="mct-motion-line mct-motion-line-two" />
+          <div className="hero-bottom">
+            <div className="hero-facts">
+              <div><strong>60 мин</strong><span>консультация</span></div>
+              <div><strong>5 000 ₽</strong><span>стоимость</span></div>
+              <div><strong>2 формата</strong><span>очно · онлайн</span></div>
             </div>
-          </div>
-
-          <div className="mct-hero-bottom">
-            <div className="mct-stats" aria-label="Основная информация о консультации">
-              <div className="mct-stat"><strong>60</strong><span>минут</span></div>
-              <div className="mct-stat"><strong>5 000 ₽</strong><span>стоимость</span></div>
-              <div className="mct-stat"><strong>2</strong><span>очно · онлайн</span></div>
-            </div>
-            <div className="mct-hero-actions">
-              <a className="mct-main-cta" href={instagramUrl} aria-label="Написать Дмитрию в Instagram и разобрать свой случай">Разобрать мой случай&nbsp; →</a>
-              <a className="mct-quiet-link" href="#mobile-process">Как проходит консультация <span aria-hidden="true">↓</span></a>
-            </div>
+            <a className="primary-cta" href={instagramUrl}>Разобрать мой случай <span>↗</span></a>
+            <a className="quiet-cta" href="#trust">Почему Дмитрий <span>↓</span></a>
           </div>
         </div>
       </header>
 
-      <section className="mct-prices mct-reveal" id="mobile-help" data-reveal>
-        <div className="mct-shell">
-          <div className="mct-price-head">
-            <p className="mct-section-kicker">С чем можно обратиться</p>
-            <h2>Когда движение<br />стало ограниченным</h2>
-            <span>Не начинаем с универсального комплекса. Сначала разбираем, что именно изменилось и чего вы хотите вернуть.</span>
+      <section className="trust section" id="trust">
+        <div className="shell trust-grid">
+          <div className="portrait-card reveal" data-reveal>
+            <div className="portrait-crop">
+              <img src={asset('/portrait-story.png')} alt="Дмитрий Рихальский, специалист по физической реабилитации" />
+            </div>
+            <div className="portrait-caption"><span>Дмитрий Рихальский</span><small>специалист по физической реабилитации</small></div>
           </div>
-          <div className="mct-service-list">
-            {concerns.map((item, index) => (
-              <article className="mct-service-row" key={item.title}>
-                <span className="mct-service-index">{String(index + 1).padStart(2, '0')}</span>
-                <div className="mct-service-name"><strong>{item.title}</strong><p>{item.text}</p></div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      <section className="mct-process mct-reveal" id="mobile-process" data-reveal>
-        <div className="mct-shell">
-          <div className="mct-section-head mct-process-head">
-            <div><p className="mct-section-kicker">Как проходит консультация</p><h2>Сначала понять.<br />Потом нагружать.</h2></div>
-          </div>
-          <div className="mct-process-list">
-            {steps.map((step) => (
-              <article className="mct-process-card" key={step.number}>
-                <span>{step.number}</span>
-                <div><h3>{step.title}</h3><p>{step.text}</p></div>
-              </article>
-            ))}
-          </div>
-          <div className="mct-outcome-card">
-            <p className="mct-section-kicker">После консультации</p>
-            <h3>У вас остаётся понятный план дальнейших действий.</h3>
-            <div className="mct-outcome-grid">
-              <span>Исходная точка</span><span>Приоритеты</span><span>План нагрузки</span>
+          <div className="trust-copy reveal" data-reveal>
+            <p className="section-kicker">О специалисте</p>
+            <h2>Опыт, который<br />можно проверить</h2>
+            <p className="trust-lead">В сохранённых материалах Дмитрия указаны высшее образование, 13+ лет практики, членство в Союзе реабилитологов России и личный опыт восстановления после тяжёлой травмы.</p>
+            <div className="trust-facts">
+              {trustFacts.map(([value, label]) => (
+                <div key={value + label}><strong>{value}</strong><span>{label}</span></div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mct-formats mct-reveal" id="mobile-formats" data-reveal>
-        <div className="mct-shell">
-          <div className="mct-formats-head">
-            <div><p className="mct-section-kicker">Форматы консультации</p><h2>Очно или<br />онлайн</h2></div>
-            <span>60 минут · 5 000 ₽</span>
+      <section className="help section" id="help">
+        <div className="shell">
+          <div className="section-head reveal" data-reveal>
+            <div><p className="section-kicker">С чем работает Дмитрий</p><h2>Не только<br />«болит спина»</h2></div>
+            <p>Фокус — вернуть движение и нагрузку, а не просто выдать одинаковый комплекс упражнений.</p>
           </div>
-          <div className="mct-format-grid">
-            <article className="mct-format-card mct-format-card-primary">
-              <span>01 · Севастополь</span>
-              <h3>Очная консультация</h3>
-              <p>Разбор запроса, оценка движения и двигательные тесты вживую.</p>
-              <strong>5 000 ₽ <small>/ 60 минут</small></strong>
-              <a href={instagramUrl} aria-label="Записаться на очную консультацию через Instagram">Выбрать очный формат <span aria-hidden="true">→</span></a>
-            </article>
-            <article className="mct-format-card">
-              <span>02 · Видеосвязь</span>
-              <h3>Онлайн-консультация</h3>
-              <p>Разбор ситуации, доступная оценка движения и план самостоятельной работы.</p>
-              <strong>5 000 ₽ <small>/ 60 минут</small></strong>
-              <a href={instagramUrl} aria-label="Записаться на онлайн-консультацию через Instagram">Выбрать онлайн <span aria-hidden="true">→</span></a>
-            </article>
+
+          <div className="help-layout">
+            <div className="anatomy-card reveal" data-reveal aria-hidden="true">
+              <img src={asset('/portrait-story.png')} alt="" />
+              <div className="anatomy-gradient" />
+              <span>движение<br />как система</span>
+            </div>
+            <div className="concern-grid">
+              {concerns.map(([title, text], index) => (
+                <article className="concern reveal" data-reveal key={title} style={{ '--delay': `${index * 70}ms` } as CSSProperties}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mct-final-book" id="mobile-booking" ref={bookingRef}>
-        <div className="mct-book-glow" aria-hidden="true" />
-        <div className="mct-shell">
-          <p className="mct-section-kicker">Запись на консультацию</p>
-          <h2>Расскажите,<br />что мешает двигаться</h2>
-          <p className="mct-final-copy">Не нужно заранее формулировать всё идеально. Для первого сообщения достаточно трёх вещей:</p>
-          <div className="mct-message-guide" aria-label="Что написать Дмитрию в первом сообщении">
-            <span><b>01</b> Что беспокоит</span>
-            <span><b>02</b> Как давно</span>
-            <span><b>03</b> Очно или онлайн</span>
+      <section className="process section" id="process">
+        <div className="shell">
+          <div className="section-head reveal" data-reveal>
+            <div><p className="section-kicker">Как проходит консультация</p><h2>Понятно.<br />Без лишнего.</h2></div>
+            <p>За одну встречу вы проходите путь от запроса до конкретного следующего шага.</p>
           </div>
-          <a className="mct-final-cta" href={instagramUrl} aria-label="Написать Дмитрию в Instagram">Написать @dm_rihalsky&nbsp; →</a>
+          <div className="steps">
+            {steps.map(([number, title, text], index) => (
+              <article className="step reveal" data-reveal key={number} style={{ '--delay': `${index * 90}ms` } as CSSProperties}>
+                <span>{number}</span><div><h3>{title}</h3><p>{text}</p></div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <footer className="mct-footer">
-        <div className="mct-shell">
-          <a className="mct-footer-brand" href="#mobile-top">Дмитрий Рихальский</a>
-          <div><span>Формат</span><p>Севастополь · очно<br />Онлайн · видеосвязь</p></div>
-          <div><span>Консультация</span><p>60 минут · 5 000 ₽</p></div>
-          <div><span>Связь</span><p><a href={instagramUrl}>@dm_rihalsky ↗</a></p></div>
+      <section className="booking" id="booking" ref={bookingRef}>
+        <div className="booking-bg" aria-hidden="true"><div /><div /></div>
+        <div className="shell booking-inner reveal" data-reveal>
+          <p className="section-kicker">Консультация</p>
+          <h2>Выберите формат.<br />Остальное разберёте вместе.</h2>
+          <div className="format-row">
+            <div><span>Очно</span><strong>Севастополь</strong></div>
+            <div><span>Онлайн</span><strong>Видеосвязь</strong></div>
+            <div><span>Длительность</span><strong>60 минут</strong></div>
+            <div><span>Стоимость</span><strong>5 000 ₽</strong></div>
+          </div>
+          <p className="booking-copy">Для первого сообщения достаточно написать, что беспокоит и какой формат удобнее.</p>
+          <a className="booking-cta" href={instagramUrl}>Написать Дмитрию <span>↗</span></a>
+          <a className="instagram-handle" href={instagramUrl}>@dm_rihalsky</a>
         </div>
+      </section>
+
+      <footer className="footer">
+        <div className="shell"><span>Дмитрий Рихальский · физическая реабилитация</span><a href="#top">Наверх ↑</a></div>
       </footer>
 
-      <a
-        className={`mct-sticky-book${stickyVisible ? ' is-visible' : ''}`}
-        href={instagramUrl}
-        aria-label="Разобрать свой случай с Дмитрием"
-      >
-        <span><small>60 минут · 5 000 ₽</small><strong>Разобрать мой случай</strong></span>
-        <i aria-hidden="true">→</i>
+      <a className={`sticky-cta${stickyVisible ? ' is-visible' : ''}`} href={instagramUrl}>
+        <span><small>60 минут · 5 000 ₽</small><strong>Разобрать мой случай</strong></span><i>→</i>
       </a>
-    </div>
+    </main>
   );
 }
