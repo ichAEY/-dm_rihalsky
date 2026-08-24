@@ -15,6 +15,8 @@ const steps = [
   { number: '03', title: 'Составляем план', text: 'Подбираем понятные упражнения и определяем следующий шаг восстановления.' },
 ];
 
+const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
 export default function Home() {
   return (
     <main>
@@ -51,7 +53,7 @@ export default function Home() {
           <div className="visual-orbit orbit-one" />
           <div className="visual-orbit orbit-two" />
           <div className="portrait-frame">
-            <Image src="/portrait-story.png" alt="Дмитрий Рихальский, специалист по физической реабилитации" fill priority sizes="(max-width: 760px) 88vw, 42vw" className="portrait-image" />
+            <Image src={`${publicBasePath}/portrait-story.png`} alt="Дмитрий Рихальский, специалист по физической реабилитации" fill priority sizes="(max-width: 760px) 88vw, 42vw" className="portrait-image" />
             <div className="portrait-shade" />
           </div>
           <div className="visual-note note-top"><span>Очно</span><strong>Севастополь</strong></div>
