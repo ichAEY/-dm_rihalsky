@@ -18,10 +18,13 @@ export default function MobileV2FinalPolish() {
     let frame = 0;
     const syncSticky = () => {
       frame = 0;
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const heroBottom = hero.getBoundingClientRect().bottom;
       const requestTop = request.getBoundingClientRect().top;
-      const shouldShow = heroBottom <= 0 && requestTop > 92;
+      const shouldShow = isMobile && heroBottom <= 0 && requestTop > 118;
+
       sticky.classList.toggle('m2-final-show', shouldShow);
+      sticky.style.setProperty('display', shouldShow ? 'grid' : 'none', 'important');
     };
 
     const requestSync = () => {
@@ -78,6 +81,7 @@ export default function MobileV2FinalPolish() {
       window.removeEventListener('resize', requestSync);
       formObserver.disconnect();
       sticky.classList.remove('m2-final-managed', 'm2-final-show');
+      sticky.style.removeProperty('display');
       setDarkChrome(false);
       if (themeMeta) themeMeta.content = originalTheme;
       document.documentElement.style.backgroundColor = originalHtmlBackground;
