@@ -4,8 +4,10 @@ import './mobile-redesign.css';
 import './mobile-v2.css';
 import './mobile-v2-final.css';
 import './mobile-v2-hotfix.css';
+import './hero-visuals.css';
 import MobileV2 from './mobile-v2';
 import MobileV2FinalPolish from './mobile-v2-final';
+import HeroVisualRotator from './hero-visuals';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ichaey.github.io/-dm_rihalsky/'),
@@ -45,6 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <MobileV2 />
+        <HeroVisualRotator />
         <MobileV2FinalPolish />
       </body>
     </html>
