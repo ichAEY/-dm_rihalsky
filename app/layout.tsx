@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './mobile-redesign.css';
 import './mobile-v2.css';
+import './mobile-v2-final.css';
 import MobileV2 from './mobile-v2';
+import MobileV2FinalPolish from './mobile-v2-final';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ichaey.github.io/-dm_rihalsky/'),
@@ -42,6 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <MobileV2 />
+        <MobileV2FinalPolish />
       </body>
     </html>
   );
