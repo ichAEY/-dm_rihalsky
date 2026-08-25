@@ -48,12 +48,12 @@ const services = {
   },
 } as const;
 
-function FormIcon() {
+function CalendarIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 3.5h7.5L19 8v12.5H7z" />
-      <path d="M14 3.5V8h5M10 12h6M10 16h4" />
-      <path d="M4.5 7.5v12h9" />
+      <rect x="4" y="5.5" width="16" height="14" rx="3" />
+      <path d="M8 3.5v4M16 3.5v4M4 9.5h16" />
+      <path d="M8 13h3M13.5 13H16M8 16h3" />
     </svg>
   );
 }
@@ -64,6 +64,24 @@ function MenuIcon({ open }: { open: boolean }) {
       <i />
       <i />
     </span>
+  );
+}
+
+function TelegramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.5 4.5 3.8 11.1c-.9.4-.8 1.1.2 1.4l4.2 1.3 1.6 5c.2.7.7.8 1.2.3l2.3-2.1 4.2 3.1c.7.5 1.3.2 1.5-.7L22 5.7c.2-1-.4-1.6-1.5-1.2Z" />
+      <path d="m8.2 13.8 9.5-6.1-7.9 7.1" />
+    </svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" />
+      <circle cx="12" cy="10" r="2.2" />
+    </svg>
   );
 }
 
@@ -117,6 +135,7 @@ export default function MobileV2() {
   const [activeService, setActiveService] = useState<ServiceId>('offline');
   const [stickyVisible, setStickyVisible] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
+  const requestRef = useRef<HTMLDivElement>(null);
   const service = services[activeService];
 
   useEffect(() => {
@@ -126,12 +145,27 @@ export default function MobileV2() {
     );
     document.querySelectorAll('.mobile-v2 [data-m2-reveal]').forEach((node) => revealObserver.observe(node));
 
-    const heroObserver = new IntersectionObserver(([entry]) => setStickyVisible(!entry.isIntersecting), { threshold: 0.03 });
+    let heroVisible = true;
+    let requestVisible = false;
+    const syncSticky = () => setStickyVisible(!heroVisible && !requestVisible);
+
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+      syncSticky();
+    }, { threshold: 0.03 });
+
+    const requestObserver = new IntersectionObserver(([entry]) => {
+      requestVisible = entry.isIntersecting;
+      syncSticky();
+    }, { threshold: 0.08 });
+
     if (heroRef.current) heroObserver.observe(heroRef.current);
+    if (requestRef.current) requestObserver.observe(requestRef.current);
 
     return () => {
       revealObserver.disconnect();
       heroObserver.disconnect();
+      requestObserver.disconnect();
     };
   }, []);
 
@@ -161,8 +195,8 @@ export default function MobileV2() {
           </button>
 
           <div className="m2-top-actions">
-            <button className="m2-form-icon" type="button" onClick={() => goToForm()} aria-label="Заполнить форму обращения">
-              <FormIcon />
+            <button className="m2-form-icon" type="button" onClick={() => goToForm()} aria-label="Перейти к форме записи">
+              <CalendarIcon />
             </button>
             <button className="m2-menu-button" type="button" onClick={() => setMenuOpen((value) => !value)} aria-label="Открыть меню">
               <MenuIcon open={menuOpen} />
@@ -210,7 +244,7 @@ export default function MobileV2() {
             <small>Специалист по физической реабилитации</small>
           </span>
         </button>
-        <button className="m2-sticky-book" type="button" onClick={() => goToForm()}>Записаться</button>
+        <button className="m2-sticky-book" type="button" onClick={() => goToForm()}>Запись</button>
         <button className="m2-menu-button m2-menu-sticky" type="button" onClick={() => setMenuOpen((value) => !value)} aria-label="Открыть меню">
           <MenuIcon open={menuOpen} />
         </button>
@@ -253,8 +287,10 @@ export default function MobileV2() {
 
       <section className="m2-services" id="m2-services">
         <header className="m2-services-head" data-m2-reveal>
-          <span>Форматы работы</span>
-          <div className="m2-services-label">Услуги</div>
+          <div className="m2-services-title">
+            <span className="m2-services-mark"><ServiceIcon type="offline" /></span>
+            <h2>Услуги</h2>
+          </div>
           <p>Выберите формат консультации. В обоих случаях задача одна: разобраться в ситуации и определить понятный следующий шаг.</p>
         </header>
 
@@ -273,13 +309,15 @@ export default function MobileV2() {
           <h3>{service.title}</h3>
           <p className="m2-detail-summary">{service.summary}</p>
 
-          <div className="m2-detail-block">
-            <h4>Что даёт</h4>
-            <ul>{service.gives.map((item) => <li key={item}>{item}</li>)}</ul>
-          </div>
-          <div className="m2-detail-block">
-            <h4>Кому подходит</h4>
-            <ul>{service.fits.map((item) => <li key={item}>{item}</li>)}</ul>
+          <div className="m2-detail-content">
+            <section>
+              <h4>Что даёт:</h4>
+              <ul>{service.gives.map((item) => <li key={item}>{item}</li>)}</ul>
+            </section>
+            <section>
+              <h4>Кому подходит:</h4>
+              <ul>{service.fits.map((item) => <li key={item}>{item}</li>)}</ul>
+            </section>
           </div>
 
           <div className="m2-service-meta">
@@ -314,7 +352,7 @@ export default function MobileV2() {
           <img src={asset('/dimaosebe.webp')} alt="Дмитрий Рихальский — физическая реабилитация" />
         </div>
 
-        <div className="m2-request" data-m2-reveal>
+        <div className="m2-request" data-m2-reveal ref={requestRef}>
           <span>С чем обратиться</span>
           <h3>Когда движение стало болезненным, ограниченным или непредсказуемым.</h3>
           <div className="m2-request-scroll" aria-label="Частые запросы">
@@ -335,15 +373,11 @@ export default function MobileV2() {
             <span><strong>Рихальский Дмитрий</strong><small>Специалист по физической реабилитации</small></span>
           </div>
 
-          <div className="m2-contact-actions">
-            <div className="m2-contact-methods">
-              <span className="m2-telegram">Telegram</span>
-              <span className="m2-handle">@dm_rihalsky</span>
-            </div>
-            <button className="m2-contact-form-button" type="button" onClick={() => goToForm()}>Заполнить форму <span>↗</span></button>
+          <div className="m2-contact-links" aria-label="Контакты Дмитрия">
+            <span className="m2-contact-link m2-contact-telegram"><i><TelegramIcon /></i><b>Telegram</b></span>
+            <span className="m2-contact-link"><i className="m2-i-mark">i</i><b>@dm_rihalsky</b></span>
+            <span className="m2-contact-link"><i><PinIcon /></i><b>Севастополь</b></span>
           </div>
-
-          <div className="m2-tanem">TANEM.RU</div>
         </div>
       </section>
 
@@ -371,10 +405,8 @@ export default function MobileV2() {
             <span>Комментарий <small>необязательно</small></span>
             <textarea name="comment" rows={4} placeholder="Коротко опишите, с чем хотите обратиться" />
           </label>
-          <button type="submit">Отправить заявку <span>↗</span></button>
+          <button type="submit">Оставить заявку <span>↗</span></button>
         </form>
-
-        <div className="m2-form-footer">TANEM.RU · цифровой офис</div>
       </section>
     </main>
   );
