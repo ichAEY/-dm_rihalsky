@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 const instagramUrl = 'https://www.instagram.com/dm_rihalsky/';
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -30,26 +30,51 @@ const helpItems = [
 ];
 
 const consultationSteps = [
-  ['01', 'Разберём вашу ситуацию', 'Вы расскажете, что беспокоит, как давно это длится и в каких движениях появляется ограничение.'],
-  ['02', 'Проверим движение', 'Я посмотрю подвижность, контроль и реакцию тела на доступные движения и нагрузку.'],
-  ['03', 'Соберём план восстановления', 'Вы получите понятный следующий шаг: что делать, чего пока избегать и как возвращать нагрузку.'],
+  ['01', 'Разберу вашу ситуацию', 'Сначала я уточню, что беспокоит, как давно это длится и в каких движениях появляется боль или ограничение.'],
+  ['02', 'Оценю движение', 'Посмотрю подвижность, контроль и реакцию тела на доступные движения и привычную для вас нагрузку.'],
+  ['03', 'Соберу план восстановления', 'Определю приоритеты и дам понятный следующий шаг: что делать сейчас и как постепенно возвращать нагрузку.'],
 ];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [stickyVisible, setStickyVisible] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const consultationRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const revealObserver = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('is-visible')),
       { threshold: 0.14 },
     );
-    document.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    document.querySelectorAll('[data-reveal]').forEach((node) => revealObserver.observe(node));
+
+    let heroVisible = true;
+    let consultationVisible = false;
+    const syncSticky = () => setStickyVisible(!heroVisible && !consultationVisible);
+
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+      syncSticky();
+    }, { threshold: 0.05 });
+
+    const consultationObserver = new IntersectionObserver(([entry]) => {
+      consultationVisible = entry.isIntersecting;
+      syncSticky();
+    }, { threshold: 0.08 });
+
+    if (heroRef.current) heroObserver.observe(heroRef.current);
+    if (consultationRef.current) consultationObserver.observe(consultationRef.current);
+
+    return () => {
+      revealObserver.disconnect();
+      heroObserver.disconnect();
+      consultationObserver.disconnect();
+    };
   }, []);
 
   return (
     <main className="site">
-      <header className="hero" id="top">
+      <header className="hero" id="top" ref={heroRef}>
         <div className="topbar shell">
           <a className="brand" href="#top">Дмитрий Рихальский</a>
           <nav className="desktop-nav" aria-label="Навигация">
@@ -77,27 +102,32 @@ export default function Home() {
         <div className="hero-inner shell">
           <div className="hero-copy">
             <p className="eyebrow">Физическая реабилитация · Севастополь и онлайн</p>
-            <h1>Вернуться<br /><span>к движению</span></h1>
-            <p className="hero-lead">Помогаю понять, почему движение стало болезненным или ограниченным, и выстроить персональный план восстановления.</p>
+            <h1>Вернуть свободу<br /><span>движения</span></h1>
+            <p className="hero-lead">Помогаю понять, что ограничивает движение, уменьшить влияние боли на повседневную активность и выстроить персональный план восстановления.</p>
           </div>
 
           <div className="hero-visual" aria-hidden="true">
             <div className="spine-glow" />
             <div className="spine-ring spine-ring-a" />
             <div className="spine-ring spine-ring-b" />
-            <img className="spine-image" src={asset('/spine-hero.svg')} alt="" />
             <span className="spine-dot spine-dot-a" />
             <span className="spine-dot spine-dot-b" />
+            <div className="motion-core"><i /><i /><i /></div>
           </div>
 
           <div className="hero-bottom">
-            <div className="hero-facts">
+            <div className="hero-action-row">
+              <a className="hero-consult-link" href="#consultation">
+                <span>Как проходит консультация</span><i>↓</i>
+              </a>
+              <a className="primary-cta" href={instagramUrl}>Разобрать мой случай <span>↗</span></a>
+            </div>
+
+            <div className="hero-facts" aria-label="Параметры консультации">
               <div><strong>60 минут</strong><span>консультация</span></div>
               <div><strong>5 000 ₽</strong><span>стоимость</span></div>
-              <div><strong>Очно / онлайн</strong><span>два формата</span></div>
+              <div><strong>Очно / онлайн</strong><span>Севастополь · дистанционно</span></div>
             </div>
-            <a className="hero-consult-link" href="#consultation">Как проходит консультация <span>↓</span></a>
-            <a className="primary-cta" href={instagramUrl}>Разобрать мой случай <span>↗</span></a>
           </div>
         </div>
       </header>
@@ -113,15 +143,31 @@ export default function Home() {
               <h2>Дмитрий Рихальский</h2>
               <p>Я занимаюсь физической реабилитацией больше 13 лет. Работаю с болью в спине, суставах и мышцах, восстановлением после травм, двигательными дисбалансами и возвращением к привычной нагрузке.</p>
               <p>Мне важно не просто дать упражнения. Сначала я разбираюсь, что именно ограничивает движение у конкретного человека, а затем выстраиваю понятный путь восстановления.</p>
-              <div className="about-facts">
-                <span><strong>13+</strong> лет практики</span>
-                <span><strong>1000+</strong> клиентов</span>
-                <span>Высшее образование</span>
-                <span>Член Союза реабилитологов России</span>
+
+              <div className="credentials" aria-label="Опыт и квалификация">
+                <div className="credential credential-number">
+                  <strong>13+</strong>
+                  <span>лет практики</span>
+                </div>
+                <div className="credential credential-number">
+                  <strong>1000+</strong>
+                  <span>клиентов</span>
+                </div>
+                <div className="credential credential-text">
+                  <small>Образование</small>
+                  <strong>Высшее</strong>
+                  <span>профессиональная база для работы с восстановлением</span>
+                </div>
+                <div className="credential credential-text">
+                  <small>Профессиональное сообщество</small>
+                  <strong>СРР</strong>
+                  <span>член Союза реабилитологов России</span>
+                </div>
               </div>
+
               <a className="profile-badge" href={instagramUrl}>
                 <span className="profile-dot" />
-                <span><small>Instagram</small><strong>@dm_rihalsky</strong></span>
+                <span><small>Профиль Дмитрия</small><strong>@dm_rihalsky</strong></span>
                 <i>↗</i>
               </a>
             </div>
@@ -163,9 +209,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="consultation" id="consultation">
+      <section className="consultation" id="consultation" ref={consultationRef}>
         <div className="consultation-shell shell reveal" data-reveal>
-          <div className="consultation-head">
+          <div className="consultation-head-card">
             <div>
               <p className="section-kicker">Консультация</p>
               <h2>За 60 минут — от вопроса к понятному плану.</h2>
@@ -173,27 +219,40 @@ export default function Home() {
             <p>Я не обещаю универсальное «лечение за один сеанс». Моя задача — разобраться в вашей ситуации и показать, как безопасно двигаться дальше.</p>
           </div>
 
-          <div className="consultation-steps">
-            {consultationSteps.map(([number, title, text]) => (
-              <article className="consult-step" key={number}>
-                <span>{number}</span>
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="consultation-footer">
-            <div className="consultation-meta">
-              <div><small>Формат</small><strong>Севастополь / онлайн</strong></div>
-              <div><small>Длительность</small><strong>60 минут</strong></div>
-              <div><small>Стоимость</small><strong>5 000 ₽</strong></div>
+          <div className="consultation-flow">
+            <div className="consultation-steps">
+              {consultationSteps.map(([number, title, text]) => (
+                <article className="consult-step" key={number}>
+                  <span className="step-number">{number}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </div>
+                </article>
+              ))}
             </div>
-            <a className="consultation-cta" href={instagramUrl}>Написать Дмитрию <span>↗</span></a>
-            <a className="consultation-handle" href={instagramUrl}>@dm_rihalsky</a>
+
+            <aside className="consultation-result">
+              <p className="result-label">После консультации</p>
+              <h3>У вас будет понятная точка старта.</h3>
+              <p>Что сейчас важно, какие движения можно использовать и в какой последовательности возвращать нагрузку.</p>
+              <div className="result-meta">
+                <div><small>Формат</small><strong>Очно / онлайн</strong></div>
+                <div><small>Длительность</small><strong>60 минут</strong></div>
+                <div><small>Стоимость</small><strong>5 000 ₽</strong></div>
+              </div>
+              <a className="consultation-cta" href={instagramUrl}>Разобрать мой случай <span>↗</span></a>
+              <a className="consultation-handle" href={instagramUrl}>@dm_rihalsky</a>
+            </aside>
           </div>
         </div>
       </section>
+
+      <a className={`sticky-cta${stickyVisible ? ' is-visible' : ''}`} href={instagramUrl}>
+        <span className="sticky-pulse" />
+        <span className="sticky-copy"><small>Консультация · 60 минут</small><strong>Разобрать мой случай</strong></span>
+        <i>↗</i>
+      </a>
     </main>
   );
 }
