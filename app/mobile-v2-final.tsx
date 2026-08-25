@@ -7,33 +7,51 @@ export default function MobileV2FinalPolish() {
     const mobile = document.querySelector<HTMLElement>('.mobile-v2');
     const sticky = document.querySelector<HTMLElement>('.m2-sticky');
     const hero = document.querySelector<HTMLElement>('.m2-hero');
+    const request = document.querySelector<HTMLElement>('.m2-request');
     const form = document.getElementById('m2-contact-form');
     const rail = document.querySelector<HTMLElement>('.m2-request-scroll');
 
-    if (!mobile || !sticky || !hero || !form) return;
+    if (!mobile || !sticky || !hero || !request || !form) return;
 
     sticky.classList.add('m2-final-managed');
 
-    let heroVisible = true;
-    let formNear = false;
+    let frame = 0;
     const syncSticky = () => {
-      sticky.classList.toggle('m2-final-show', !heroVisible && !formNear);
+      frame = 0;
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      const requestTop = request.getBoundingClientRect().top;
+      const shouldShow = heroBottom <= 0 && requestTop > 92;
+      sticky.classList.toggle('m2-final-show', shouldShow);
     };
 
-    const heroObserver = new IntersectionObserver(([entry]) => {
-      heroVisible = entry.isIntersecting;
-      syncSticky();
-    }, { threshold: 0.03 });
+    const requestSync = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(syncSticky);
+    };
+
+    syncSticky();
+    window.addEventListener('scroll', requestSync, { passive: true });
+    window.addEventListener('resize', requestSync);
+
+    const themeMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    const originalTheme = themeMeta?.content || '#f4f7f9';
+    const originalHtmlBackground = document.documentElement.style.backgroundColor;
+    const originalBodyBackground = document.body.style.backgroundColor;
+
+    const setDarkChrome = (dark: boolean) => {
+      const color = dark ? '#15181c' : originalTheme;
+      if (themeMeta) themeMeta.content = color;
+      document.documentElement.style.backgroundColor = dark ? '#15181c' : originalHtmlBackground;
+      document.body.style.backgroundColor = dark ? '#15181c' : originalBodyBackground;
+      document.body.classList.toggle('m2-dark-browser-chrome', dark);
+    };
 
     const formObserver = new IntersectionObserver(([entry]) => {
-      formNear = entry.isIntersecting;
-      syncSticky();
+      setDarkChrome(entry.isIntersecting);
     }, {
-      threshold: 0,
-      rootMargin: '0px 0px 32% 0px',
+      threshold: 0.02,
+      rootMargin: '0px 0px 12% 0px',
     });
-
-    heroObserver.observe(hero);
     formObserver.observe(form);
 
     if (rail && rail.children.length > 0 && !rail.dataset.marqueeReady) {
@@ -55,9 +73,15 @@ export default function MobileV2FinalPolish() {
     }
 
     return () => {
-      heroObserver.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', requestSync);
+      window.removeEventListener('resize', requestSync);
       formObserver.disconnect();
       sticky.classList.remove('m2-final-managed', 'm2-final-show');
+      setDarkChrome(false);
+      if (themeMeta) themeMeta.content = originalTheme;
+      document.documentElement.style.backgroundColor = originalHtmlBackground;
+      document.body.style.backgroundColor = originalBodyBackground;
     };
   }, []);
 
