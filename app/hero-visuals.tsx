@@ -3,15 +3,7 @@
 import { useEffect } from 'react';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-const visuals = [
-  '/dimadoma1.webp',
-  '/dimadoma3.webp',
-  '/dimadoma4.webp',
-  '/dimadoma5.webp',
-  '/dimadoma7.webp',
-  '/dimadoma9.webp',
-  '/dimadoma10.webp',
-];
+const visuals = Array.from({ length: 8 }, (_, index) => `/kosti${String(index + 1).padStart(5, '0')}.webp`);
 
 export default function HeroVisualRotator() {
   useEffect(() => {
@@ -21,36 +13,145 @@ export default function HeroVisualRotator() {
     space.dataset.heroVisualsReady = 'true';
 
     const stage = document.createElement('div');
-    stage.className = 'm2-hero-visuals';
+    stage.className = 'm2-xray-ribbon';
     stage.setAttribute('aria-hidden', 'true');
 
-    const images = visuals.map((src, index) => {
-      const image = document.createElement('img');
-      image.src = `${basePath}${src}`;
-      image.alt = '';
-      image.decoding = 'async';
-      image.loading = 'eager';
-      image.className = `m2-hero-visual${index === 0 ? ' is-active' : ''}`;
-      stage.appendChild(image);
-      return image;
-    });
+    const track = document.createElement('div');
+    track.className = 'm2-xray-track';
+    stage.appendChild(track);
 
+    const makeGroup = () => {
+      const group = document.createElement('div');
+      group.className = 'm2-xray-group';
+
+      visuals.forEach((src) => {
+        const image = document.createElement('img');
+        image.src = `${basePath}${src}`;
+        image.alt = '';
+        image.decoding = 'async';
+        image.loading = 'eager';
+        image.draggable = false;
+        group.appendChild(image);
+      });
+
+      return group;
+    };
+
+    track.append(makeGroup(), makeGroup(), makeGroup());
     space.appendChild(stage);
 
-    let active = 0;
-    let timer: number | undefined;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let groupWidth = 0;
+    let offset = 0;
+    let lastFrame = performance.now();
+    let animationFrame = 0;
+    let dragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragStartOffset = 0;
+    let horizontalDrag = false;
+    let pauseUntil = 0;
 
-    if (!reduceMotion) {
-      timer = window.setInterval(() => {
-        images[active]?.classList.remove('is-active');
-        active = (active + 1) % images.length;
-        images[active]?.classList.add('is-active');
-      }, 3000);
-    }
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const speed = 14;
+
+    const normalize = () => {
+      if (!groupWidth) return;
+      while (offset <= -2 * groupWidth) offset += groupWidth;
+      while (offset > -groupWidth) offset -= groupWidth;
+    };
+
+    const paint = () => {
+      track.style.transform = `translate3d(${offset}px,0,0)`;
+    };
+
+    const measure = () => {
+      const firstGroup = track.firstElementChild as HTMLElement | null;
+      if (!firstGroup) return;
+      const nextWidth = firstGroup.getBoundingClientRect().width;
+      if (!nextWidth) return;
+
+      if (!groupWidth) {
+        groupWidth = nextWidth;
+        offset = -groupWidth;
+      } else {
+        const progress = (offset + groupWidth) / groupWidth;
+        groupWidth = nextWidth;
+        offset = -groupWidth + progress * groupWidth;
+        normalize();
+      }
+      paint();
+    };
+
+    const frame = (now: number) => {
+      const delta = Math.min(50, now - lastFrame);
+      lastFrame = now;
+
+      if (!dragging && !reducedMotion && now >= pauseUntil && groupWidth) {
+        offset -= speed * (delta / 1000);
+        normalize();
+        paint();
+      }
+
+      animationFrame = requestAnimationFrame(frame);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      dragging = true;
+      horizontalDrag = false;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragStartOffset = offset;
+      pauseUntil = Number.POSITIVE_INFINITY;
+      stage.classList.add('is-dragging');
+      stage.setPointerCapture?.(event.pointerId);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!dragging) return;
+
+      const dx = event.clientX - dragStartX;
+      const dy = event.clientY - dragStartY;
+
+      if (!horizontalDrag && Math.abs(dx) > 4) {
+        if (Math.abs(dx) <= Math.abs(dy)) return;
+        horizontalDrag = true;
+      }
+
+      if (!horizontalDrag) return;
+
+      event.preventDefault();
+      offset = dragStartOffset + dx;
+      normalize();
+      paint();
+    };
+
+    const finishDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      horizontalDrag = false;
+      pauseUntil = performance.now() + 500;
+      stage.classList.remove('is-dragging');
+      if (stage.hasPointerCapture?.(event.pointerId)) stage.releasePointerCapture?.(event.pointerId);
+    };
+
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(stage);
+
+    stage.addEventListener('pointerdown', onPointerDown);
+    stage.addEventListener('pointermove', onPointerMove);
+    stage.addEventListener('pointerup', finishDrag);
+    stage.addEventListener('pointercancel', finishDrag);
+
+    requestAnimationFrame(measure);
+    animationFrame = requestAnimationFrame(frame);
 
     return () => {
-      if (timer) window.clearInterval(timer);
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      stage.removeEventListener('pointerdown', onPointerDown);
+      stage.removeEventListener('pointermove', onPointerMove);
+      stage.removeEventListener('pointerup', finishDrag);
+      stage.removeEventListener('pointercancel', finishDrag);
       stage.remove();
       delete space.dataset.heroVisualsReady;
     };
