@@ -1,0 +1,7 @@
+@media (max-width:767px){
+  .m2-about-mark{left:calc(50% - 112px)!important}
+}
+
+@media (max-width:365px){
+  .m2-about-mark{left:calc(50% - 105px)!important}
+}
