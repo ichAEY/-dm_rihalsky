@@ -3,6 +3,7 @@ import './globals.css';
 import './mobile-redesign.css';
 import './mobile-v2.css';
 import './mobile-v2-final.css';
+import './mobile-v2-hotfix.css';
 import MobileV2 from './mobile-v2';
 import MobileV2FinalPolish from './mobile-v2-final';
 
