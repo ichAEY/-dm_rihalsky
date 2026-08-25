@@ -48,8 +48,9 @@ export default function MobileV2FinalPolish() {
 
       const clone = group.cloneNode(true) as HTMLElement;
       clone.setAttribute('aria-hidden', 'true');
-      track.append(group, clone);
-      rail.append(track);
+      track.appendChild(group);
+      track.appendChild(clone);
+      rail.appendChild(track);
       rail.classList.add('m2-marquee-ready');
     }
 
