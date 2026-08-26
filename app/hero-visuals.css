@@ -35,9 +35,9 @@
     display:flex;
     flex:0 0 auto;
     align-items:center;
-    gap:2px;
+    gap:4px;
     height:100%;
-    padding-right:2px;
+    padding-right:4px;
   }
 
   .m2-xray-group img{
@@ -61,7 +61,7 @@
   .m2-hero-space{min-height:158px}
   .m2-xray-ribbon{height:146px}
   .m2-xray-group img{width:142px;height:142px;flex-basis:142px}
-  .m2-xray-group{gap:2px;padding-right:2px}
+  .m2-xray-group{gap:4px;padding-right:4px}
 }
 
 @media (prefers-reduced-motion:reduce){
