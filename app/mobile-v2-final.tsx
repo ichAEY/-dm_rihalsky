@@ -14,6 +14,7 @@ export default function MobileV2FinalPolish() {
     if (!mobile || !sticky || !hero || !request || !form) return;
 
     sticky.classList.add('m2-final-managed');
+    sticky.style.removeProperty('display');
 
     let frame = 0;
     const syncSticky = () => {
@@ -24,7 +25,6 @@ export default function MobileV2FinalPolish() {
       const shouldShow = isMobile && heroBottom <= 0 && requestTop > 118;
 
       sticky.classList.toggle('m2-final-show', shouldShow);
-      sticky.style.setProperty('display', shouldShow ? 'grid' : 'none', 'important');
     };
 
     const requestSync = () => {
