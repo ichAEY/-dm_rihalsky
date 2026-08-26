@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './desktop-laptop.css';
+import './desktop-v2.css';
 import './mobile-redesign.css';
 import './mobile-v2.css';
 import './mobile-v2-final.css';
 import './mobile-v2-hotfix.css';
 import './hero-visuals.css';
+import DesktopV2 from './desktop-v2';
 import MobileV2 from './mobile-v2';
 import MobileV2FinalPolish from './mobile-v2-final';
 import HeroVisualRotator from './hero-visuals';
@@ -47,6 +49,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head><script dangerouslySetInnerHTML={{ __html: enhancementScript }} /></head>
       <body>
         {children}
+        <DesktopV2 />
         <MobileV2 />
         <HeroVisualRotator />
         <MobileV2FinalPolish />
