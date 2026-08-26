@@ -7,11 +7,12 @@ export default function MobileV2FinalPolish() {
     const mobile = document.querySelector<HTMLElement>('.mobile-v2');
     const sticky = document.querySelector<HTMLElement>('.m2-sticky');
     const hero = document.querySelector<HTMLElement>('.m2-hero');
+    const about = document.querySelector<HTMLElement>('.m2-about');
     const request = document.querySelector<HTMLElement>('.m2-request');
     const form = document.getElementById('m2-contact-form');
     const rail = document.querySelector<HTMLElement>('.m2-request-scroll');
 
-    if (!mobile || !sticky || !hero || !request || !form) return;
+    if (!mobile || !sticky || !hero || !about || !request || !form) return;
 
     let frame = 0;
 
@@ -20,9 +21,9 @@ export default function MobileV2FinalPolish() {
 
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const heroBottom = hero.getBoundingClientRect().bottom;
-      const requestBottom = request.getBoundingClientRect().bottom;
+      const aboutTop = about.getBoundingClientRect().top;
       const stopLine = Math.max(76, sticky.offsetHeight + 16);
-      const shouldShow = isMobile && heroBottom <= 0 && requestBottom > stopLine;
+      const shouldShow = isMobile && heroBottom <= 0 && aboutTop > stopLine;
 
       if (!sticky.classList.contains('m2-final-managed')) {
         sticky.classList.add('m2-final-managed');
@@ -39,12 +40,8 @@ export default function MobileV2FinalPolish() {
       frame = window.requestAnimationFrame(syncSticky);
     };
 
-    /*
-      MobileV2 still owns a legacy React `is-visible` class. React can replace the
-      whole className when that state changes, which would otherwise remove the
-      final sticky classes. Keep the final controller authoritative without
-      allowing the legacy class to bring the island back below the request block.
-    */
+    /* React still owns a legacy `is-visible` class. Keep this controller
+       authoritative so the island cannot reappear below the About section. */
     const legacyStickyObserver = new MutationObserver(() => {
       const lostController = !sticky.classList.contains('m2-final-managed');
       const hasLegacyClass = sticky.classList.contains('is-visible');
