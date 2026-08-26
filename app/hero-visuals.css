@@ -35,18 +35,19 @@
     display:flex;
     flex:0 0 auto;
     align-items:center;
-    gap:0;
+    gap:2px;
     height:100%;
-    padding-right:0;
+    padding-right:2px;
   }
 
   .m2-xray-group img{
     display:block;
     width:184px;
     height:184px;
-    flex:0 0 178px;
+    flex:0 0 184px;
     border-radius:8px;
-    object-fit:contain;
+    object-fit:cover;
+    object-position:center;
     pointer-events:none;
     -webkit-user-drag:none;
   }
@@ -59,8 +60,8 @@
 @media (max-width:767px) and (max-height:720px){
   .m2-hero-space{min-height:158px}
   .m2-xray-ribbon{height:146px}
-  .m2-xray-group img{width:142px;height:142px;flex-basis:138px}
-  .m2-xray-group{gap:0;padding-right:0}
+  .m2-xray-group img{width:142px;height:142px;flex-basis:142px}
+  .m2-xray-group{gap:2px;padding-right:2px}
 }
 
 @media (prefers-reduced-motion:reduce){
