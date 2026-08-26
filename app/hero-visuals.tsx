@@ -52,13 +52,9 @@ export default function HeroVisualRotator() {
     let dragStartOffset = 0;
     let horizontalDrag = false;
     let pauseUntil = 0;
-    let lastPointerX = 0;
-    let lastPointerTime = 0;
-    let pointerVelocity = 0;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const baseVelocity = -14;
-    let velocity = baseVelocity;
+    const speed = 14;
 
     const normalize = () => {
       if (!groupWidth) return;
@@ -93,9 +89,7 @@ export default function HeroVisualRotator() {
       lastFrame = now;
 
       if (!dragging && !reducedMotion && now >= pauseUntil && groupWidth) {
-        const ease = 1 - Math.pow(0.94, delta / 16.67);
-        velocity += (baseVelocity - velocity) * ease;
-        offset += velocity * (delta / 1000);
+        offset -= speed * (delta / 1000);
         normalize();
         paint();
       }
@@ -109,9 +103,6 @@ export default function HeroVisualRotator() {
       dragStartX = event.clientX;
       dragStartY = event.clientY;
       dragStartOffset = offset;
-      lastPointerX = event.clientX;
-      lastPointerTime = performance.now();
-      pointerVelocity = 0;
       pauseUntil = Number.POSITIVE_INFINITY;
       stage.classList.add('is-dragging');
       stage.setPointerCapture?.(event.pointerId);
@@ -134,25 +125,11 @@ export default function HeroVisualRotator() {
       offset = dragStartOffset + dx;
       normalize();
       paint();
-
-      const now = performance.now();
-      const elapsed = Math.max(8, now - lastPointerTime);
-      const instantVelocity = (event.clientX - lastPointerX) / (elapsed / 1000);
-      pointerVelocity = pointerVelocity * 0.35 + instantVelocity * 0.65;
-      lastPointerX = event.clientX;
-      lastPointerTime = now;
     };
 
     const finishDrag = (event: PointerEvent) => {
       if (!dragging) return;
       dragging = false;
-
-      if (horizontalDrag) {
-        velocity = Math.max(-2200, Math.min(2200, pointerVelocity));
-      } else {
-        velocity = baseVelocity;
-      }
-
       horizontalDrag = false;
       pauseUntil = performance.now() + 500;
       stage.classList.remove('is-dragging');
