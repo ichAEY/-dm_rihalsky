@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import './desktop-laptop.css';
 import './mobile-redesign.css';
 import './mobile-v2.css';
 import './mobile-v2-final.css';
