@@ -14,15 +14,26 @@ export default function MobileV2FinalPolish() {
     if (!mobile || !sticky || !hero || !request || !form) return;
 
     sticky.classList.add('m2-final-managed');
+    sticky.classList.remove('is-visible');
     sticky.style.removeProperty('display');
+
+    const legacyStickyObserver = new MutationObserver(() => {
+      if (sticky.classList.contains('is-visible')) sticky.classList.remove('is-visible');
+    });
+    legacyStickyObserver.observe(sticky, { attributes: true, attributeFilter: ['class'] });
 
     let frame = 0;
     const syncSticky = () => {
       frame = 0;
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const heroBottom = hero.getBoundingClientRect().bottom;
-      const requestTop = request.getBoundingClientRect().top;
-      const shouldShow = isMobile && heroBottom <= 0 && requestTop > 118;
+      const requestBottom = request.getBoundingClientRect().bottom;
+      const formTop = form.getBoundingClientRect().top;
+
+      const afterHero = heroBottom <= 0;
+      const beforeRequestEnds = requestBottom > 118;
+      const beforeForm = formTop > 118;
+      const shouldShow = isMobile && afterHero && beforeRequestEnds && beforeForm;
 
       sticky.classList.toggle('m2-final-show', shouldShow);
     };
@@ -79,8 +90,9 @@ export default function MobileV2FinalPolish() {
       if (frame) window.cancelAnimationFrame(frame);
       window.removeEventListener('scroll', requestSync);
       window.removeEventListener('resize', requestSync);
+      legacyStickyObserver.disconnect();
       formObserver.disconnect();
-      sticky.classList.remove('m2-final-managed', 'm2-final-show');
+      sticky.classList.remove('m2-final-managed', 'm2-final-show', 'is-visible');
       sticky.style.removeProperty('display');
       setDarkChrome(false);
       if (themeMeta) themeMeta.content = originalTheme;
