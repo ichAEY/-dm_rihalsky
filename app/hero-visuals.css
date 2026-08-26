@@ -2,7 +2,7 @@
   .m2-hero-space{
     position:relative;
     display:grid;
-    min-height:140px;
+    min-height:160px;
     flex:1;
     place-items:center;
     overflow:visible;
@@ -11,7 +11,7 @@
   .m2-xray-ribbon{
     position:relative;
     width:calc(100% + 32px);
-    height:134px;
+    height:154px;
     margin-left:-16px;
     overflow:hidden;
     touch-action:pan-y;
@@ -35,16 +35,16 @@
     display:flex;
     flex:0 0 auto;
     align-items:center;
-    gap:6px;
+    gap:3px;
     height:100%;
-    padding-right:6px;
+    padding-right:3px;
   }
 
   .m2-xray-group img{
     display:block;
-    width:124px;
-    height:124px;
-    flex:0 0 124px;
+    width:146px;
+    height:146px;
+    flex:0 0 146px;
     border-radius:8px;
     object-fit:contain;
     pointer-events:none;
@@ -53,10 +53,10 @@
 }
 
 @media (max-width:767px) and (max-height:720px){
-  .m2-hero-space{min-height:116px}
-  .m2-xray-ribbon{height:108px}
-  .m2-xray-group img{width:100px;height:100px;flex-basis:100px}
-  .m2-xray-group{gap:5px;padding-right:5px}
+  .m2-hero-space{min-height:126px}
+  .m2-xray-ribbon{height:120px}
+  .m2-xray-group img{width:112px;height:112px;flex-basis:112px}
+  .m2-xray-group{gap:3px;padding-right:3px}
 }
 
 @media (prefers-reduced-motion:reduce){
