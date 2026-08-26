@@ -140,32 +140,26 @@
   .m2-form button{background:#fff;color:#15181c}
   body.m2-dark-browser-chrome{background:#15181c!important}
 
-  /* Keep sticky mounted so both entrance and exit can actually animate. */
+  /* Keep sticky mounted so both entrance and exit can animate reliably on iOS. */
   .m2-sticky.m2-final-managed{
     display:grid!important;
-    visibility:hidden;
     opacity:0!important;
-    transform:translateY(-24px) scale(.985)!important;
-    filter:blur(2px);
+    transform:translate3d(0,-18px,0) scale(.992)!important;
     pointer-events:none!important;
-    will-change:opacity,transform,filter;
+    will-change:opacity,transform;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
     transition:
-      opacity .46s ease,
-      transform .58s cubic-bezier(.16,.84,.24,1),
-      filter .42s ease,
-      visibility 0s linear .58s!important;
+      opacity .58s cubic-bezier(.22,.61,.36,1),
+      transform .62s cubic-bezier(.22,.61,.36,1)!important;
   }
   .m2-sticky.m2-final-managed.m2-final-show{
-    visibility:visible;
     opacity:1!important;
-    transform:translateY(0) scale(1)!important;
-    filter:blur(0);
+    transform:translate3d(0,0,0) scale(1)!important;
     pointer-events:auto!important;
     transition:
-      opacity .46s ease,
-      transform .58s cubic-bezier(.16,.84,.24,1),
-      filter .42s ease,
-      visibility 0s linear 0s!important;
+      opacity .48s cubic-bezier(.22,.61,.36,1),
+      transform .56s cubic-bezier(.16,.84,.24,1)!important;
   }
 }
 
