@@ -37,7 +37,9 @@ export default function HeroVisualRotator() {
       return group;
     };
 
-    track.append(makeGroup(), makeGroup(), makeGroup());
+    track.appendChild(makeGroup());
+    track.appendChild(makeGroup());
+    track.appendChild(makeGroup());
     space.appendChild(stage);
 
     let groupWidth = 0;
