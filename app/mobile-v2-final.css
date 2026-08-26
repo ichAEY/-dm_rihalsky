@@ -140,9 +140,33 @@
   .m2-form button{background:#fff;color:#15181c}
   body.m2-dark-browser-chrome{background:#15181c!important}
 
-  /* Dedicated scroll-range logic owns sticky visibility: after hero, before 'С чем обратиться?'. */
-  .m2-sticky.m2-final-managed{opacity:0!important;transform:translateY(-90px)!important;pointer-events:none!important}
-  .m2-sticky.m2-final-managed.m2-final-show{opacity:1!important;transform:none!important;pointer-events:auto!important}
+  /* Keep sticky mounted so both entrance and exit can actually animate. */
+  .m2-sticky.m2-final-managed{
+    display:grid!important;
+    visibility:hidden;
+    opacity:0!important;
+    transform:translateY(-24px) scale(.985)!important;
+    filter:blur(2px);
+    pointer-events:none!important;
+    will-change:opacity,transform,filter;
+    transition:
+      opacity .46s ease,
+      transform .58s cubic-bezier(.16,.84,.24,1),
+      filter .42s ease,
+      visibility 0s linear .58s!important;
+  }
+  .m2-sticky.m2-final-managed.m2-final-show{
+    visibility:visible;
+    opacity:1!important;
+    transform:translateY(0) scale(1)!important;
+    filter:blur(0);
+    pointer-events:auto!important;
+    transition:
+      opacity .46s ease,
+      transform .58s cubic-bezier(.16,.84,.24,1),
+      filter .42s ease,
+      visibility 0s linear 0s!important;
+  }
 }
 
 @media (max-width:365px){
