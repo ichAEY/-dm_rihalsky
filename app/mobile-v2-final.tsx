@@ -13,28 +13,24 @@ export default function MobileV2FinalPolish() {
 
     if (!mobile || !sticky || !hero || !request || !form) return;
 
-    sticky.classList.add('m2-final-managed');
-    sticky.classList.remove('is-visible');
-    sticky.style.removeProperty('display');
-
-    const legacyStickyObserver = new MutationObserver(() => {
-      if (sticky.classList.contains('is-visible')) sticky.classList.remove('is-visible');
-    });
-    legacyStickyObserver.observe(sticky, { attributes: true, attributeFilter: ['class'] });
-
     let frame = 0;
+
     const syncSticky = () => {
       frame = 0;
+
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const heroBottom = hero.getBoundingClientRect().bottom;
       const requestBottom = request.getBoundingClientRect().bottom;
-      const formTop = form.getBoundingClientRect().top;
+      const stopLine = Math.max(76, sticky.offsetHeight + 16);
+      const shouldShow = isMobile && heroBottom <= 0 && requestBottom > stopLine;
 
-      const afterHero = heroBottom <= 0;
-      const beforeRequestEnds = requestBottom > 118;
-      const beforeForm = formTop > 118;
-      const shouldShow = isMobile && afterHero && beforeRequestEnds && beforeForm;
-
+      if (!sticky.classList.contains('m2-final-managed')) {
+        sticky.classList.add('m2-final-managed');
+      }
+      if (sticky.classList.contains('is-visible')) {
+        sticky.classList.remove('is-visible');
+      }
+      sticky.style.removeProperty('display');
       sticky.classList.toggle('m2-final-show', shouldShow);
     };
 
@@ -43,7 +39,30 @@ export default function MobileV2FinalPolish() {
       frame = window.requestAnimationFrame(syncSticky);
     };
 
+    /*
+      MobileV2 still owns a legacy React `is-visible` class. React can replace the
+      whole className when that state changes, which would otherwise remove the
+      final sticky classes. Keep the final controller authoritative without
+      allowing the legacy class to bring the island back below the request block.
+    */
+    const legacyStickyObserver = new MutationObserver(() => {
+      const lostController = !sticky.classList.contains('m2-final-managed');
+      const hasLegacyClass = sticky.classList.contains('is-visible');
+
+      if (!lostController && !hasLegacyClass) return;
+
+      if (lostController) sticky.classList.add('m2-final-managed');
+      if (hasLegacyClass) sticky.classList.remove('is-visible');
+      requestSync();
+    });
+    legacyStickyObserver.observe(sticky, { attributes: true, attributeFilter: ['class'] });
+
+    sticky.classList.add('m2-final-managed');
+    sticky.classList.remove('is-visible');
+    sticky.style.removeProperty('display');
+
     syncSticky();
+    window.requestAnimationFrame(syncSticky);
     window.addEventListener('scroll', requestSync, { passive: true });
     window.addEventListener('resize', requestSync);
 
